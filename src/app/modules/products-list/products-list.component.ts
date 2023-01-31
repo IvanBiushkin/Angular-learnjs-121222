@@ -7,7 +7,7 @@ import { LoadDirection } from '../../shared/scroll-with-loading/load-direction.c
 	selector: 'app-products-list',
 	templateUrl: './products-list.component.html',
 	styleUrls: ['./products-list.component.less'],
-	changeDetection: ChangeDetectionStrategy.OnPush,
+	changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ProductsListComponent implements OnInit, DoCheck {
 	products: IProduct[] | null = null;
@@ -17,8 +17,8 @@ export class ProductsListComponent implements OnInit, DoCheck {
 	constructor(private applicationRef: ApplicationRef, private changeDetectorRef: ChangeDetectorRef) {}
 
 	ngOnInit() {
-		this.changeDetectorRef.detach();
-		this.changeDetectorRef.detectChanges();
+		// this.changeDetectorRef.detach();
+		// this.changeDetectorRef.detectChanges();
 
 		setTimeout(() => {
 			this.products = productsMock;
@@ -26,16 +26,16 @@ export class ProductsListComponent implements OnInit, DoCheck {
 			// this.changeDetectorRef.markForCheck();
 		}, 3000);
 
-		setTimeout(() => {
-			this.products = [...productsMock].map(item => ({ ...item, rating: 3 }));
-			// this.changeDetectorRef.detectChanges();
-			// this.changeDetectorRef.markForCheck();
-		}, 6000);
+		// setTimeout(() => {
+		// 	this.products = [...productsMock].map(item => ({ ...item, rating: 3 }));
+		// 	// this.changeDetectorRef.detectChanges();
+		// 	// this.changeDetectorRef.markForCheck();
+		// }, 6000);
 
-		setTimeout(() => {
-			this.changeDetectorRef.reattach();
-			this.changeDetectorRef.markForCheck();
-		}, 7000);
+		// setTimeout(() => {
+		// 	this.changeDetectorRef.reattach();
+		// 	this.changeDetectorRef.markForCheck();
+		// }, 7000);
 
 		// setInterval(() => {
 		// this.applicationRef.tick();

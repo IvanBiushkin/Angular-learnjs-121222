@@ -25,8 +25,8 @@ interface IPaginationContext<T> {
 	selector: '[appPagination]',
 })
 export class PaginationDirective<T> implements OnInit, OnChanges, OnDestroy {
+	@Input() appPaginationOf: T[] | undefined;
 	@Input() appPaginationElementsSize = 1;
-	@Input() appPaginationOf: T[] | undefined | null;
 
 	private groupedItems: Array<T[]> = [];
 

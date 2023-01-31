@@ -7,8 +7,8 @@
 		*appCarousel="
 			product.images as images;
 			visibility: true as visibilityFromContext;
-			let next = next;
-			let back = back;
+			let moveNext = next;
+			let moveBack = back;
 			let currentImage
 		"
 		class="galerey"
@@ -21,11 +21,11 @@
 		> -->
 		<!-- {{images.length}} -->
 		<!-- {{visibilityFromContext}} -->
-		<button mat-icon-button (click)="back()">
+		<button mat-icon-button (click)="moveBack()">
 			<mat-icon> chevron_left </mat-icon>
 		</button>
-		<img mat-card-image alt="Product photo" [src]="currentImage.url" />
-		<button mat-icon-button (click)="next()">
+		<img mat-card-image alt="Product" [src]="currentImage.url" />
+		<button mat-icon-button (click)="moveNext()">
 			<mat-icon> chevron_right </mat-icon>
 		</button>
 		<!-- </ng-template> -->

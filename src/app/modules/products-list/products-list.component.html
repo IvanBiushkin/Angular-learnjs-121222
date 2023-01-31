@@ -1,8 +1,8 @@
 <div *ngIf="products as productsFromNgIf; else loader" class="scroll-container">
 	<ng-container
 		*appPagination="
-			let productsGroup of products;
-			elementsSize: 4;
+			let productsGroup of productsFromNgIf;
+			elementsSize: 3;
 			let allIndexes = allIndexes;
 			let activeIndex = index;
 			let next = next;
@@ -33,8 +33,8 @@
 			<button
 				*ngFor="let index of allIndexes"
 				mat-icon-button
-				class="pagination__page-number"
-				[class.pagination__page-number_active]="activeIndex === index"
+				class="pagination_page-number"
+				[class.pagination_page-number_active]="activeIndex === index"
 				(click)="selectIndex(index)"
 			>
 				{{ index + 1 }}
