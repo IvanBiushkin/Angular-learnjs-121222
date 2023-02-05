@@ -9,7 +9,6 @@ export class ProductsApiService {
 	constructor(@Inject(BASE_URL) private baseUrl: string) {}
 
 	getProducts$(): Observable<IProduct[]> {
-		console.log(this.baseUrl);
 		return of({ data: { items: productsMock } }).pipe(map(({ data }) => data.items));
 	}
 }

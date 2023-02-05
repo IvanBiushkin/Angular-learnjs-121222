@@ -1,5 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { isString } from './is-string';
+import { IProduct } from '../products/product.interface';
 
 @Pipe({
 	name: 'filterByParam',
@@ -8,13 +9,12 @@ export class FilterByParamPipe implements PipeTransform {
 	transform<T, P extends keyof T>(
 		items: T[] | undefined | null,
 		searchValue: T[P] | null,
-		searchingProperty: P,
+		searchProperty: P,
 	): T[] | undefined | null {
 		return items?.filter(item => {
-			const propertyValue = item[searchingProperty];
-
+			const propertyValue = item[searchProperty];
 			return isString(propertyValue)
-				? propertyValue.toUpperCase().includes((searchValue as unknown as string)?.toUpperCase())
+				? propertyValue.toLowerCase().includes((searchValue as unknown as string)?.toLowerCase())
 				: propertyValue === searchValue;
 		});
 	}
