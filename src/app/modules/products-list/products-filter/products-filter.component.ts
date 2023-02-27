@@ -18,82 +18,59 @@ import { IProductsFilter } from './products-filter.interface';
 	styleUrls: ['./products-filter.component.less'],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductsFilterComponent {
+export class ProductsFilterComponent implements OnInit, OnChanges {
 	@Input() brands!: string[] | null;
 
 	@Output() changeFilter = new EventEmitter<IProductsFilter>();
 
-	log = console.log;
+	readonly filterForm = new FormGroup({
+		name: new FormControl('', { validators: [Validators.minLength(2)] }),
+		brands: new FormArray<FormControl>([]),
+		priceRange: new FormGroup({
+			min: new FormControl(0),
+			max: new FormControl(10000),
+		}),
+	});
 
-	// readonly filterForm = new FormGroup({
-	// 	// name: new FormControl({value: '', disabled: true}, {validators: [Validators.minLength(3)]}),
-	// 	name: new FormControl('', {validators: [Validators.minLength(3)]}),
-	// 	brands: new FormArray<FormControl>([]),
-	// 	priceRange: new FormGroup({
-	// 		min: new FormControl(0),
-	// 		max: new FormControl(100000),
-	// 	}),
-	// })
+	get filterFormControl(): FormControl {
+		return this.filterForm.get(['priceRange', 'min']) as FormControl;
+	}
 
-	// get filterFormControl(): FormControl {
-	// 	return this.filterForm.get(['priceRange', 'min']) as FormControl;
-	// }
+	ngOnChanges({ brands }: SimpleChanges): void {
+		if (brands && this.brands) {
+			this.initBrandsFormArray();
+		}
+	}
 
-	// ngOnChanges({brands}: SimpleChanges): void {
-	// 	if (brands && this.brands) {
-	// 		// this.initBrandsFormArray();
+	ngOnInit(): void {
+		this.filterForm.valueChanges
+			.pipe(
+				map(
+					({ brands, ...filter }): IProductsFilter =>
+						({
+							...filter,
+							brands: this.getBrandsListFromCheckboxes(brands),
+						} as IProductsFilter),
+				),
+			)
+			.subscribe(filter => {
+				this.changeFilter.emit(filter);
+			});
+	}
 
-	// 		setTimeout(() => {
-	// 			// this.filterForm.get('name')?.setValidators(Validators.required);
-	// 			this.filterForm.get('name')?.disable();
+	private initBrandsFormArray() {
+		const brandsControls: FormControl<boolean>[] = this.brands?.map(
+			() => new FormControl<boolean>(true),
+		) as FormControl<boolean>[];
 
-	// 			console.log(this.filterForm.value);
-	// 			console.log(this.filterForm.getRawValue());
+		this.filterForm.setControl('brands', new FormArray(brandsControls));
+	}
 
-	// 			// this.filterForm.setValue({
-	// 			// 	name: '123',
-	// 			// 	brands: this.brands?.map(() => new FormControl<boolean>(true)) as FormControl<boolean>[],
-	// 			// 	priceRange: {
-	// 			// 		max: 20,
-	// 			// 		min: 10,
-	// 			// 	}
-	// 			// }, {emitEvent: true});
-	// 			// this.filterForm.patchValue({
-	// 			// 	priceRange: {
-	// 			// 		max: 300,
-	// 			// 	}
-	// 			// });
-	// 		// }, 3000);
-	// 	}
-	// }
+	private getBrandsListFromCheckboxes(brandsCheckboxes: boolean[] | undefined): IProductsFilter['brands'] {
+		if (!this.brands || !brandsCheckboxes) {
+			return [];
+		}
 
-	// ngOnInit(): void {
-	// this.filterForm.valueChanges
-	// 	.pipe(
-	// 		map(({brands, ...filter}): IProductsFilter => ({
-	// 			...filter,
-	// 			brands: this.getBrandsListFromCheckboxes(brands),
-	// 		} as IProductsFilter))
-	// 	)
-	// 	.subscribe(filter => {
-	// 		console.log(filter);
-	// 		this.changeFilter.emit(filter);
-	// 	});
-
-	// this.filterForm.get('name')?.valueChanges.subscribe(console.log);
-	// }
-
-	// private initBrandsFormArray() {
-	// 	const brandsControls: FormControl<boolean>[] = this.brands?.map(() => new FormControl<boolean>(false)) as FormControl<boolean>[];
-
-	// 	this.filterForm.setControl('brands', new FormArray(brandsControls));
-	// }
-
-	// private getBrandsListFromCheckboxes(brandsCheckboxes: boolean[] | undefined): IProductsFilter['brands'] {
-	// 	if (!this.brands || !brandsCheckboxes) {
-	// 		return [];
-	// 	}
-
-	// 	return this.brands.filter((_, index) => brandsCheckboxes[index]);
-	// }
+		return this.brands.filter((_, index) => brandsCheckboxes[index]);
+	}
 }

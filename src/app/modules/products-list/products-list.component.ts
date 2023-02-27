@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { select, Store } from '@ngrx/store';
-import { map, takeUntil } from 'rxjs';
+import { map, Observable, switchMap, takeUntil, tap } from 'rxjs';
 import { BrandsService } from '../../shared/brands/brands.service';
 import { DestroyService } from '../../shared/destroy/destroy.service';
 import { IProduct } from '../../shared/products/product.interface';
@@ -10,6 +10,7 @@ import { loadProducts } from '../../shared/store/products/products.actions';
 import { productsAllSelector, productsFeatureSelector } from '../../shared/store/products/products.selectors';
 import { PRODUCTS_FEATURE } from '../../shared/store/products/products.state';
 import { IState } from '../../shared/store/reducer';
+import { IProductsFilter } from './products-filter/products-filter.interface';
 
 @Component({
 	selector: 'app-products-list',
@@ -19,13 +20,22 @@ import { IState } from '../../shared/store/reducer';
 	providers: [DestroyService],
 })
 export class ProductsListComponent implements OnInit {
-	// readonly products$ = this.activatedRoute.paramMap.pipe(
-	// 	map(paramMap => paramMap.get('subcategoryId')),
-	// 	tap(id => {
-	// 		this.productsStoreService.loadProducts(id);
-	// 	}),
-	// 	switchMap(() => this.productsStoreService.products$),
-	// );
+	nameFilter = '';
+
+	readonly products$ = this.activatedRoute.paramMap.pipe(
+		map(paramMap => paramMap.get('subcategoryId')),
+		tap(id => {
+			this.productsStoreService.loadProducts(id);
+		}),
+		switchMap(() => this.productsStoreService.products$),
+	);
+
+	filterProducts(filter: IProductsFilter) {
+		if (filter.name) {
+			this.nameFilter = filter.name;
+		}
+	}
+
 	// readonly brands$ = this.activatedRoute.paramMap.pipe(
 	// 	map(paramMap => paramMap.get('subcategoryId')),
 	// 	tap(id => {
@@ -33,11 +43,11 @@ export class ProductsListComponent implements OnInit {
 	// 	}),
 	// 	switchMap(() => this.brandsService.brands$),
 	// );
-	readonly products$ = this.store$.pipe(select(productsAllSelector));
+	// readonly products$ = this.store$.pipe(select(productsAllSelector));
 	readonly brands$ = this.brandsService.brands$;
 
 	constructor(
-		// private readonly productsStoreService: ProductsStoreService,
+		private readonly productsStoreService: ProductsStoreService,
 		private readonly brandsService: BrandsService,
 		private readonly activatedRoute: ActivatedRoute,
 		private readonly destroy$: DestroyService,
@@ -45,19 +55,15 @@ export class ProductsListComponent implements OnInit {
 	) {}
 
 	ngOnInit(): void {
-		// this.store$
-		// 	.pipe(
-		// 		select(productsAllSelector),
-		// 	)
-		// 	.subscribe(console.log);
+		this.store$.pipe(select(productsAllSelector));
 		this.activatedRoute.paramMap
 			.pipe(
 				map(paramMap => paramMap.get('subcategoryId')),
 				takeUntil(this.destroy$),
 			)
 			.subscribe(subcategoryId => {
-				this.store$.dispatch(loadProducts(subcategoryId));
-				// this.productsStoreService.loadProducts(subcategoryId);
+				// this.store$.dispatch(loadProducts(subcategoryId));
+				this.productsStoreService.loadProducts(subcategoryId);
 				this.brandsService.loadBrands(subcategoryId);
 			});
 	}

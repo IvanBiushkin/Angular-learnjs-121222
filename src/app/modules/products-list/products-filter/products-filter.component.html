@@ -1,4 +1,4 @@
-<form #form="ngForm" class="filter" (ngSubmit)="log(form.value)">
+<!-- <form #form="ngForm" class="filter" (ngSubmit)="log(form.value)">
 	<mat-form-field appearance="fill">
 		<mat-label>Search</mat-label>
 		<input ngModel name="name" matInput />
@@ -25,15 +25,18 @@
 	</div>
 
 	<input type="submit" />
-</form>
-<!-- <form [formGroup]="filterForm" class="filter">
+</form> -->
+<form class="filter" [formGroup]="filterForm">
 	<mat-form-field appearance="fill">
 		<mat-label>Search</mat-label>
 		<input formControlName="name" matInput />
 	</mat-form-field>
 
 	<div formArrayName="brands" class="checkbox-container">
-		<mat-checkbox [formControlName]="index" *ngFor="let brand of brands; let index = index">
+		<mat-checkbox
+			*ngFor="let brand of brands; let index = index"
+			[formControlName]="index"
+		>
 			{{ brand }}
 		</mat-checkbox>
 	</div>
@@ -41,12 +44,10 @@
 		<div>
 			Min
 			<app-counter-input formControlName="min"></app-counter-input>
-			<app-counter-input [formControl]="filterForm.get(['priceRange', 'min'])"></app-counter-input>
-			<app-counter-input [formControl]="filterFormControl"></app-counter-input>
 		</div>
 		<div>
 			Max
 			<app-counter-input formControlName="max"></app-counter-input>
 		</div>
 	</div>
-</form> -->
+</form>
